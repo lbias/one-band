@@ -13,9 +13,9 @@
 
 import hashlib
 import os
-import blue_yellow_app
+import band
 
-__full_path = os.path.dirname(os.path.abspath(blue_yellow_app.__file__))
+__full_path = os.path.dirname(os.path.abspath(band.__file__))
 __hash_lookup = dict()
 
 # Set this to False in production, True in development

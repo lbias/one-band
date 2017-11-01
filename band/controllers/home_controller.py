@@ -1,4 +1,5 @@
 import pyramid_handlers
+
 from band.controllers.base_controller import BaseController
 from band.infrastructure.supressor import suppress
 
