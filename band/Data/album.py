@@ -1,4 +1,6 @@
 import sqlalchemy
+import sqlalchemy.orm
+from sqlalchemy.ext.orderinglist import ordering_list
 
 from band.data.modelbase import SqlAlchemyBase
 
@@ -11,3 +13,8 @@ class Album(SqlAlchemyBase):
     year = sqlalchemy.Column(sqlalchemy.Integer, index=True)
     price = sqlalchemy.Column(sqlalchemy.Float, index=True)
     album_image = sqlalchemy.Column(sqlalchemy.String)
+
+    tracks = sqlalchemy.orm.relationship('Track', back_populates='album',
+                                         order_by='Track.display_order',
+                                         collection_class=ordering_list('display_order'),
+                                         cascade='all')
