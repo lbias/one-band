@@ -1,9 +1,18 @@
+from band.data.album import Album
+from band.data.dbsession import DbSessionFactory
+
+
 class AlbumsService:
     @staticmethod
     def get_albums():
-        session = DbSessionFactory.factory
-        # todo: get albums from DB.
-        return []
+        session = DbSessionFactory.create_session()
+        
+        albums = session.query(Album)\
+            .filter(Album.is_published)\
+            .order_by(Album.year.desc())\
+            .all()
+
+        return albums
     
     @staticmethod
     def old_get_albums():

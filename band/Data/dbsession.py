@@ -1,4 +1,4 @@
- import sqlalchemy
+import sqlalchemy
 import sqlalchemy.orm
 
 from band.data.modelbase import SqlAlchemyBase
@@ -20,7 +20,7 @@ class DbSessionFactory:
         conn_str = 'sqlite:///' + db_file
         print("Connecting to db with conn string: {}".format(conn_str))
 
-        engine = sqlalchemy.create_engine(conn_str, echo=False)
+        engine = sqlalchemy.create_engine(conn_str, echo=True)
         SqlAlchemyBase.metadata.create_all(engine)
         DbSessionFactory.factory = sqlalchemy.orm.sessionmaker(bind=engine)
         
