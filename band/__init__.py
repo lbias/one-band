@@ -23,8 +23,17 @@ def main(_, **settings):
     init_includes(config)
     init_routing(config)
     init_db(config)
+    init_mailing_list(config)
 
     return config.make_wsgi_app()
+
+
+def init_mailing_list(config):
+    settings = config.get_settings()
+    mailchimp_api = settings.get('mailchimp_api')
+    mailchimp_list_id = settings.get('mailchimp_list_id')
+
+    MailingListService.global_init(mailchimp_api, mailchimp_list_id)
 
 
 def init_routing(config):
