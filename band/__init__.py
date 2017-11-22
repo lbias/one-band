@@ -1,8 +1,20 @@
+import os
+
 from pyramid.config import Configurator
 
+import band
 import band.controllers.home_controller as home
 import band.controllers.albums_controller as albums
 import band.controllers.account_controller as account
+from band.data.dbsession import DbSessionFactory
+
+
+def init_db(config):
+    top_folder = os.path.dirname(band.__file__)
+    rel_folder = os.path.join('db', 'band.sqlite')
+
+    db_file = os.path.join(top_folder, rel_folder)
+    DbSessionFactory.global_init(db_file)
 
 
 def main(_, **settings):
@@ -10,6 +22,7 @@ def main(_, **settings):
 
     init_includes(config)
     init_routing(config)
+    init_db(config)
 
     return config.make_wsgi_app()
 

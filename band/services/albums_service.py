@@ -1,6 +1,25 @@
+from sqlalchemy.orm import joinedload
+
+from band.data.album import Album
+from band.data.dbsession import DbSessionFactory
+from band.data.track import Track
+
+
 class AlbumsService:
     @staticmethod
     def get_albums():
+        session = DbSessionFactory.create_session()
+        
+        albums = session.query(Album)\
+            .options(joinedload('tracks')) \
+            .filter(Album.is_published)\
+            .order_by(Album.year.desc())\
+            .all()
+
+        return albums
+    
+    @staticmethod
+    def old_get_albums():
         return [
             {
                 'title': 'Digital age boys and girls',
@@ -32,3 +51,21 @@ class AlbumsService:
                 'url': 'year-of-the-snake'
             }
         ]
+
+
+    @classmethod
+    def create_album(cls, title: str, year: int, album_image: str,
+                     price: float, url: str, track_titles: []):
+        session = DbSessionFactory.create_session()
+
+        album = Album(name=title, year=year, album_image=album_image, price=price,
+                      url=url, is_published=True)
+
+        session.add(album)
+
+        for idx, title in enumerate(track_titles):
+            track = Track(name=title, length=60, display_order=idx+1)
+            album.tracks.append(track)
+
+        session.commit()
+        return album
