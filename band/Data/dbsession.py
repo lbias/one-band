@@ -1,4 +1,4 @@
-import sqlalchemy
+ import sqlalchemy
 import sqlalchemy.orm
 
 from band.data.modelbase import SqlAlchemyBase
@@ -24,4 +24,6 @@ class DbSessionFactory:
         SqlAlchemyBase.metadata.create_all(engine)
         DbSessionFactory.factory = sqlalchemy.orm.sessionmaker(bind=engine)
         
-        session = DbSessionFactory.factory()
+    @staticmethod
+    def create_session():    
+        return DbSessionFactory.factory()
