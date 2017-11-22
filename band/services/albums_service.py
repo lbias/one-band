@@ -1,6 +1,12 @@
 class AlbumsService:
     @staticmethod
     def get_albums():
+        session = DbSessionFactory.factory
+        # todo: get albums from DB.
+        return []
+    
+    @staticmethod
+    def old_get_albums():
         return [
             {
                 'title': 'Digital age boys and girls',
