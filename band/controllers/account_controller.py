@@ -36,6 +36,11 @@ class AccountController(BaseController):
 
         return self.redirect('/account')
 
+    @pyramid_handlers.action()
+    def logout(self):
+        cookie_auth.logout(self.request)
+        self.redirect('/')
+
     # GET /account/register
     @pyramid_handlers.action(renderer='templates/account/register.pt',
                              request_method='GET',

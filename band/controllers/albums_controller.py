@@ -9,6 +9,7 @@ class AlbumsController(BaseController):
     def index(self):
         # data / service access
         all_albums = AlbumsService.get_albums()
+        user = self.logged_in_user
 
         # return the model
         return {'albums': all_albums}
