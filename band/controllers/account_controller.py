@@ -78,3 +78,38 @@ class AccountController(BaseController):
         # redirect
         print("Redirecting to account index page...")
         self.redirect('/account')
+
+    # Form to actually enter the new password based on reset code (get)
+    @pyramid_handlers.action(renderer='templates/account/reset_password.pt',
+                             request_method='GET',
+                             name='reset_password')
+    def reset_password_get(self):
+        vm = ResetPasswordViewModel()
+        vm.from_dict(self.data_dict)
+        vm.validate()
+        return vm.to_dict()
+
+    # Form to actually enter the new password based on reset code (post)
+    @pyramid_handlers.action(renderer='templates/account/reset_password.pt',
+                             request_method='POST',
+                             name='reset_password')
+    def reset_password_post(self):
+        vm = ResetPasswordViewModel()
+        vm.from_dict(self.data_dict)
+        vm.is_get = False
+
+        vm.validate()
+        if vm.error_msg:
+            return vm.to_dict()
+
+        AccountService.use_reset_code(vm.reset_code, self.request.remote_addr)
+        account = AccountService.find_account_by_id(vm.reset.user_id)
+        AccountService.set_password(vm.password, account.id)
+
+        vm.message = 'Your password has been reset, please login.'
+        return vm.to_dict()
+
+    # A reset has been sent via email
+    @pyramid_handlers.action(renderer='templates/account/reset_sent.pt')
+    def reset_sent(self):
+        return {}
