@@ -1,6 +1,7 @@
 import pyramid.httpexceptions as exc
 import pyramid.renderers
 
+import band.infrastructure.cookie_auth as cookie_auth
 import band.infrastructure.static_cache as static_cache
 from band.infrastructure.supressor import suppress
 
@@ -32,3 +33,7 @@ class BaseController:
         data.update(self.request.matchdict)
 
         return data
+
+    @property
+    def logged_in_user_id(self):
+        return cookie_auth.get_user_id_via_auth_cookie(self.request)

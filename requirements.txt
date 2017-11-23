@@ -1,5 +1,4 @@
 arrow==0.10.0
--e git+git@github.com:lbias/one-band.git@b7e589a2e2aa571f2fc5d5b5e1333043b229ffc3#egg=band
 binaryornot==0.4.4
 certifi==2017.11.5
 Chameleon==3.2

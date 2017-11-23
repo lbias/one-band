@@ -16,3 +16,22 @@ def set_auth(request, user_id):
 
 def __add_cookie_callback(_, response, name, value):
     response.set_cookie(name, value, max_age=timedelta(days=30))
+
+
+def get_user_id_via_auth_cookie(request):
+    if auth_cookie_name not in request.cookies:
+        return None
+
+    val = request.cookies[auth_cookie_name]
+    parts = val.split(':')
+    if len(parts) != 2:
+        return None
+
+    user_id = parts[0]
+    hash_val = parts[1]
+    hash_val_check = __hash_text(user_id)
+    if hash_val != hash_val_check:
+        print("Warning: Hash mismatch, invalid cookie value")
+        return None
+
+    return user_id

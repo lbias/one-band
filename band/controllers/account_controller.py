@@ -8,6 +8,10 @@ from band.viewmodels.register_viewmodel import RegisterViewModel
 class AccountController(BaseController):
     @pyramid_handlers.action(renderer='templates/account/index.pt')
     def index(self):
+        if not self.logged_in_user_id:
+            print("Cannot view account page, must login")
+            self.redirect('/account/signin')
+
         return {}
 
     @pyramid_handlers.action(renderer='templates/account/signin.pt',
