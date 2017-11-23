@@ -49,3 +49,47 @@ class AccountService:
             return None
 
         return account
+
+    @classmethod
+    def find_account_by_id(cls, user_id):
+        if not user_id:
+            return None
+
+        session = DbSessionFactory.create_session()
+
+        account = session.query(Account) \
+            .filter(Account.id == user_id) \
+            .first()
+
+        return account
+
+    @staticmethod
+    def create_reset_code(email):
+
+        account = AccountService.find_account_by_email(email)
+        if not account:
+            return None
+
+        session = DbSessionFactory.create_session()
+
+        reset = PasswordReset()
+        reset.used_ip_address = '1.2.3.4'  # set for real
+        reset.user_id = account.id
+
+        session.add(reset)
+        session.commit()
+
+        return reset
+
+    @classmethod
+    def find_reset_code(cls, code):
+
+        if not code or not code.strip():
+            return None
+
+        session = DbSessionFactory.create_session()
+        reset = session.query(PasswordReset).\
+            filter(PasswordReset.id == code).\
+            first()
+
+        return reset
