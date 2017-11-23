@@ -4,6 +4,7 @@ import sqlalchemy.orm
 from band.data.modelbase import SqlAlchemyBase
 import band.data.account
 import band.data.album
+import band.data.passwordreset
 import band.data.track
 
 
