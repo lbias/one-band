@@ -55,4 +55,4 @@ class EmailService:
             EmailTemplateParser.welcome,
             {'email': email}
         )
-        EmailService.send_email(email, 'Welcome to Blue Yellow Rockets', html_body)
+        EmailService.send_email(email, 'Welcome to The Band', html_body)
