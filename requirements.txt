@@ -1,16 +1,18 @@
 arrow==0.10.0
--e git+git@github.com:lbias/one-band.git@b1fa54b39766002f5d54a7a8c976125d971584e1#egg=band
+-e git+git@github.com:lbias/one-band.git@b7e589a2e2aa571f2fc5d5b5e1333043b229ffc3#egg=band
 binaryornot==0.4.4
 certifi==2017.11.5
 Chameleon==3.2
 chardet==3.0.4
 click==6.7
 cookiecutter==1.6.0
+docopt==0.4.0
 future==0.16.0
 hupper==1.0
 idna==2.6
 Jinja2==2.10
 jinja2-time==0.2.0
+mailchimp==2.0.9
 Mako==1.0.7
 MarkupSafe==1.0
 PasteDeploy==1.5.2
