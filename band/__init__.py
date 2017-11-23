@@ -13,14 +13,6 @@ from band.services.mailinglist_service import MailingListService
 dev_mode = False
 
 
-def init_db(config):
-    top_folder = os.path.dirname(band.__file__)
-    rel_folder = os.path.join('db', 'band.sqlite')
-
-    db_file = os.path.join(top_folder, rel_folder)
-    DbSessionFactory.global_init(db_file)
-
-
 def main(_, **settings):
     config = Configurator(settings=settings)
 
@@ -59,10 +51,31 @@ def init_smtp_mail(config):
     EmailService.global_init(smtp_username, smtp_password, smtp_server, smtp_port, local_dev_mode)
 
 
+def init_db(_):
+    top_folder = os.path.dirname(blue_yellow_app.__file__)
+    rel_folder = os.path.join('db', 'band.sqlite')
+
+    db_file = os.path.join(top_folder, rel_folder)
+    DbSessionFactory.global_init(db_file)
+
+
+def init_mode(config):
+    global dev_mode
+    settings = config.get_settings()
+    dev_mode = settings.get('mode') == 'dev'
+    print('Running in {} mode.'.format('dev' if dev_mode else 'prod'))
+
+
 def init_mailing_list(config):
+    unset = 'THE_API_KEY'
+
     settings = config.get_settings()
     mailchimp_api = settings.get('mailchimp_api')
     mailchimp_list_id = settings.get('mailchimp_list_id')
+
+    if mailchimp_api == unset:
+        print("WARNING: Mailchimp API values not set in config file. "
+              "Mailing list subscriptions will not work.")
 
     MailingListService.global_init(mailchimp_api, mailchimp_list_id)
 

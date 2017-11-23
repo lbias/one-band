@@ -55,7 +55,6 @@ class AccountController(BaseController):
                              request_method='POST',
                              name='register')
     def register_post(self):
-        print("Calling register via POST...")
         vm = RegisterViewModel()
         vm.from_dict(self.request.POST)
 
@@ -63,9 +62,18 @@ class AccountController(BaseController):
         if vm.error:
             return vm.to_dict()
 
-        # validate no account exists, passwords match
-        # create account in DB
+        account = AccountService.find_account_by_email(vm.email)
+        if account:
+            vm.error = "An account with this email already exists. " \
+                       "Please log in instead."
+            return vm.to_dict()
+
+        account = AccountService.create_account(vm.email, vm.password)
+        print("Registered new user: " + account.email)
+        cookie_auth.set_auth(self.request, account.id)
+
         # send welcome email
+        EmailService.send_welcome_email(account.email)
 
         # redirect
         print("Redirecting to account index page...")

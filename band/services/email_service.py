@@ -48,3 +48,11 @@ class EmailService:
         )
 
         return smtp
+
+    @classmethod
+    def send_welcome_email(cls, email):
+        html_body = EmailTemplateParser.expand(
+            EmailTemplateParser.welcome,
+            {'email': email}
+        )
+        EmailService.send_email(email, 'Welcome to Blue Yellow Rockets', html_body)
