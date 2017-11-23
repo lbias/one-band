@@ -1,3 +1,6 @@
+import mailer
+import html2text
+
 class EmailService:
     __smtp_username = None
     __smtp_password = None
@@ -13,3 +16,35 @@ class EmailService:
         EmailService.__smtp_password = password
         EmailService.__smtp_port = int(port)
         EmailService.__smtp_server = server
+
+    @staticmethod
+    def send_email(to_address, subject, html_body):
+        try:
+            smtp = EmailService.create_smtp_server()
+            message = mailer.Message(
+                From=EmailService.__from_address,
+                To=to_address,
+                charset='utf-8')
+            message.Subject = subject
+            message.Html = html_body
+            message.Body = html2text.html2text(html_body)
+
+            if not EmailService.__is_debug_mode:
+                print("Sending message (live!)")
+                smtp.send(message)
+            else:
+                print("Skipping send, email is in dev mode.")
+        except Exception as x:
+            print("Error sending mail: {}".format(x))
+
+    @staticmethod
+    def create_smtp_server():
+        smtp = mailer.Mailer(
+            host=EmailService.__smtp_server,
+            port=EmailService.__smtp_port,
+            usr=EmailService.__smtp_username,
+            pwd=EmailService.__smtp_password,
+            use_tls=True
+        )
+
+        return smtp
