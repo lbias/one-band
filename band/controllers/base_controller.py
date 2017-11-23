@@ -1,9 +1,12 @@
+import logbook
+
 import pyramid.httpexceptions as exc
 import pyramid.renderers
 
 import band.infrastructure.cookie_auth as cookie_auth
 import band.infrastructure.static_cache as static_cache
 from band.infrastructure.supressor import suppress
+from band.services.account_service import AccountService
 
 
 class BaseController:
@@ -11,9 +14,12 @@ class BaseController:
         self.request = request
         self.build_cache_id = static_cache.build_cache_id
 
-        layout_render = pyramid.renderers.get_renderer('band:templates/shared/_layout.pt')
+        layout_render = pyramid.renderers.get_renderer('blue_yellow_app:templates/shared/_layout.pt')
         impl = layout_render.implementation()
         self.layout = impl.macros['layout']
+
+        log_name = 'Ctrls/' + type(self).__name__.replace("Controller", "")
+        self.log = logbook.Logger(log_name)
 
     @property
     def is_logged_in(self):
@@ -36,4 +42,13 @@ class BaseController:
 
     @property
     def logged_in_user_id(self):
-        return cookie_auth.get_user_id_via_auth_cookie(self.request)
+        user_id = cookie_auth.get_user_id_via_auth_cookie(self.request)
+        return user_id
+
+    @property
+    def logged_in_user(self):
+        uid = self.logged_in_user_id
+        if not uid:
+            return None
+
+        return AccountService.find_account_by_id(uid)
