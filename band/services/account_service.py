@@ -1,7 +1,10 @@
+import datetime
+
 from passlib.handlers.sha2_crypt import sha512_crypt
 
 from band.data.account import Account
 from band.data.dbsession import DbSessionFactory
+from band.data.passwordreset import PasswordReset
 
 
 class AccountService:
@@ -93,3 +96,37 @@ class AccountService:
             first()
 
         return reset
+
+    @classmethod
+    def use_reset_code(cls, reset_code, user_ip):
+        session = DbSessionFactory.create_session()
+
+        reset = session.query(PasswordReset). \
+            filter(PasswordReset.id == reset_code). \
+            first()
+
+        if not reset:
+            return
+
+        reset.used_ip_address = user_ip
+        reset.was_used = True
+        reset.used_date = datetime.datetime.now()
+
+        session.commit()
+
+    @classmethod
+    def set_password(cls, plain_text_password, account_id):
+        print('Resetting password for user {}'.format(account_id))
+        session = DbSessionFactory.create_session()
+
+        account = session.query(Account). \
+            filter(Account.id == account_id). \
+            first()
+
+        if not account:
+            print("Warning: Cannot reset password, no account found.")
+            return
+
+        print("New password set.")
+        account.password_hash = AccountService.hash_text(plain_text_password)
+        session.commit()
