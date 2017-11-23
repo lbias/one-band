@@ -7,6 +7,10 @@ import band.controllers.home_controller as home
 import band.controllers.albums_controller as albums
 import band.controllers.account_controller as account
 from band.data.dbsession import DbSessionFactory
+from band.services.email_service import EmailService
+from band.services.mailinglist_service import MailingListService
+
+dev_mode = False
 
 
 def init_db(config):
@@ -20,12 +24,39 @@ def init_db(config):
 def main(_, **settings):
     config = Configurator(settings=settings)
 
+    init_mode(config)
     init_includes(config)
     init_routing(config)
     init_db(config)
     init_mailing_list(config)
+    init_smtp_mail(config)
+    init_email_templates(config)
 
     return config.make_wsgi_app()
+
+
+def init_email_templates(_):
+    EmailTemplateParser.global_init()
+
+
+def init_smtp_mail(config):
+    global dev_mode
+    unset = 'YOUR_VALUE'
+
+    settings = config.get_settings()
+    smtp_username = settings.get('smtp_username')
+    smtp_password = settings.get('smtp_password')
+    smtp_server = settings.get('smtp_server')
+    smtp_port = settings.get('smtp_port')
+
+    local_dev_mode = dev_mode
+
+    if smtp_username == unset:
+        print("WARNING: SMTP server values not set in config file. "
+              "Outbound email will not work.")
+        local_dev_mode = True  # turn off email if the system has no server.
+
+    EmailService.global_init(smtp_username, smtp_password, smtp_server, smtp_port, local_dev_mode)
 
 
 def init_mailing_list(config):
