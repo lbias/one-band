@@ -1,8 +1,13 @@
 import pyramid_handlers
 
-from band.controllers.base_controller import 
+from band.controllers.base_controller import BaseController
 from band.services.account_service import AccountService
+from band.services.email_service import EmailService
+from band.viewmodels.forgotpassword_viewmodel import ForgotPasswordViewModel
 from band.viewmodels.register_viewmodel import RegisterViewModel
+from band.viewmodels.resetpassword_viewmodel import ResetPasswordViewModel
+from band.viewmodels.signin_viewmodel import SigninViewModel
+import band.infrastructure.cookie_auth as cookie_auth
 
 
 class AccountController(BaseController):
@@ -78,6 +83,38 @@ class AccountController(BaseController):
         # redirect
         print("Redirecting to account index page...")
         self.redirect('/account')
+
+    # Form to generate reset code, trigger email (get)
+    @pyramid_handlers.action(renderer='templates/account/forgot_password.pt',
+                             request_method='GET',
+                             name='forgot_password')
+    def forgot_password_get(self):
+        vm = ForgotPasswordViewModel()
+        return vm.to_dict()
+
+    # Form to generate reset code, trigger email (post)
+    @pyramid_handlers.action(renderer='templates/account/forgot_password.pt',
+                             request_method='POST',
+                             name='forgot_password')
+    def forgot_password_post(self):
+        vm = ForgotPasswordViewModel()
+        vm.from_dict(self.data_dict)
+
+        vm.validate()
+        if vm.error:
+            return vm.to_dict()
+
+        reset = AccountService.create_reset_code(vm.email)
+        if not reset:
+            vm.error = 'Cannot find the account with that email.'
+            return vm.to_dict()
+
+        EmailService.send_password_reset_email(vm.email, reset.id)
+        print("Would email the code {} to {}".format(
+            reset.id, vm.email
+        ))
+
+        self.redirect('/account/reset_sent')
 
     # Form to actually enter the new password based on reset code (get)
     @pyramid_handlers.action(renderer='templates/account/reset_password.pt',
