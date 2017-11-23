@@ -14,6 +14,11 @@ def set_auth(request, user_id):
     ))
 
 
+def __hash_text(text):
+    text = 'saltiness_' + text + '_for_the_text'
+    return hashlib.sha512(text.encode('utf-8')).hexdigest()
+
+
 def __add_cookie_callback(_, response, name, value):
     response.set_cookie(name, value, max_age=timedelta(days=30))
 
