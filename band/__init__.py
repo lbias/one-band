@@ -7,6 +7,8 @@ import band.controllers.home_controller as home
 import band.controllers.albums_controller as albums
 import band.controllers.account_controller as account
 from band.data.dbsession import DbSessionFactory
+from band.email.template_paser import EmailTemplateParser
+from band.infrastructure.credit_card_processor import CreditCardProcessor
 from band.services.email_service import EmailService
 from band.services.mailinglist_service import MailingListService
 
@@ -78,6 +80,20 @@ def init_mailing_list(config):
               "Mailing list subscriptions will not work.")
 
     MailingListService.global_init(mailchimp_api, mailchimp_list_id)
+
+
+def init_credit_cards(config):
+    unset = 'ADD_YOUR_API_KEY'
+
+    settings = config.get_settings()
+    stripe_private_key = settings.get('stripe_private_key')
+    stripe_public_key = settings.get('stripe_public_key')
+
+    if stripe_public_key == unset:
+        print("WARNING: Stripe API values not set in config file. "
+              "Credit card purchases will not work.")
+
+    CreditCardProcessor.global_init(stripe_private_key, stripe_public_key)
 
 
 def init_routing(config):
