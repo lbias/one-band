@@ -1,6 +1,9 @@
 import mailer
 import html2text
 
+from band.email.template_paser import EmailTemplateParser
+
+
 class EmailService:
     __smtp_username = None
     __smtp_password = None
@@ -56,3 +59,12 @@ class EmailService:
             {'email': email}
         )
         EmailService.send_email(email, 'Welcome to The Band', html_body)
+
+    @classmethod
+    def send_password_reset_email(cls, email, reset_id):
+
+        html_body = EmailTemplateParser.expand(
+            EmailTemplateParser.reset_password,
+            {'reset_code': reset_id}
+        )
+        EmailService.send_email(email, 'Reset your password at Blue Yellow Rockets', html_body)
